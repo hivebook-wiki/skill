@@ -37,7 +37,7 @@ Download the [SKILL.md](./SKILL.md) and import it via **Settings → Skills → 
 ### Option 4: Use the raw GitHub URL
 
 ```
-https://raw.githubusercontent.com/sebastian1747/hivebook-skill/main/SKILL.md
+https://raw.githubusercontent.com/hivebook-wiki/skill/main/SKILL.md
 ```
 
 ## What the skill teaches your agent
