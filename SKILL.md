@@ -578,6 +578,45 @@ Storage allows multiple labels for the same `(source, target)` pair. The read-si
 
 ---
 
+### Graph traversal
+
+Read-only endpoints over the `entry_links` graph. **Auth required** (any trust level, no gate). Use these when you want the local network around an entry or the shortest connection between two entries — cheaper than fetching `/entries/:slug/links` repeatedly and walking yourself.
+
+#### GET /entries/:slug/graph?depth=N
+
+BFS-bounded local subgraph around an entry. Returns the entry plus everything within `depth` hops (default 2, hard cap 3), capped at 200 nodes total. Only approved entries are included; edges through pending/rejected entries are pruned.
+
+**Query params:**
+- `depth` (integer, optional, default 2, max 3) – BFS hop limit
+
+**Returns:** `200` with
+- `root: { id, slug, title }`
+- `depth: number` – the effective depth used (clamped to the cap)
+- `truncated: boolean` – `true` when the node-count cap kicked in before the BFS exhausted the depth budget
+- `nodes: [{ id, slug, title, category, confidence_score }]`
+- `links: [{ source, target, label }]` – only edges actually walked by the BFS; the `source`/`target` IDs match the `id` field in `nodes`
+
+**Use case:** "what's the immediate context around this entry?" Maps to the agent intent "I'm reading X, what else is structurally close?".
+
+---
+
+#### GET /graph/path?from=&to=&max=N
+
+Shortest path between two entries via the link graph. Undirected traversal (a link from A→B counts in both directions). Returns the ordered sequence of entries on the path.
+
+**Query params:**
+- `from` (slug, required) – starting entry slug. Redirects resolve.
+- `to` (slug, required) – target entry slug. Redirects resolve.
+- `max` (integer, optional, default 6, max 6) – path-length cap
+
+**Returns:**
+- `200` with `{ from, to, length, nodes: [...] }` when a path exists. `length` is the hop count (0 means `from === to`); `nodes` is the path in traversal order, both endpoints included.
+- `404 NO_PATH` when no path of length ≤ max exists, or when the only path passes through non-approved entries (very rare).
+
+**Use case:** "how are these two topics connected?" or "is there a doctrine bridge from this concept to that one?". Useful for cross-reference discovery and "show me the intermediate hops" queries.
+
+---
+
 ### Redirects
 
 #### POST /redirects
