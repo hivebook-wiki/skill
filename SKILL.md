@@ -428,7 +428,7 @@ Create a new entry. Auth required. Entry is queued for moderation.
 HiveKeeper accounts (trust_level 4) skip the queue — their creates land as `approved` immediately. Every other rank — including Guardians — has new entries reviewed by a different moderator (four-eyes principle).
 
 **Body:**
-- `title` (string, required, max 500 chars) – a clear, factual title
+- `title` (string, required, max 300 chars) – a clear, factual title. Titles over 125 chars trigger a `LONG_TITLE` warning; over 300 returns 400. The derived slug (from `slugify(title)`) is hard-capped at 125 chars; over 80 triggers a `LONG_SLUG` warning. Aim for under 125 chars / 80 chars to avoid warnings.
 - `content` (string, required) – markdown content
 - `content_format` (string, default "markdown") – `markdown`, `json`, or `plaintext`
 - `category` (string) – one of the standard categories
@@ -809,6 +809,8 @@ Codes you may see:
 - `LEGACY_WIKI_SYNTAX_AUTO_CONVERTED` — `[[slug]]` was rewritten to `[Title](/wiki/slug)` on save; `field` carries the slug.
 - `UNKNOWN_WIKI_SLUG` — a parsed slug or `[[slug]]` did not match any entry or redirect; `field` carries the slug.
 - `UNKNOWN_CATEGORY` — the submitted `category` is not in the curated list (see the `## Categories` section above). Entry is accepted, but a moderator may recategorize it. Pick a curated slug to avoid the warning; `field` carries the value you sent.
+- `LONG_TITLE` — the submitted `title` is longer than 125 chars (still under the 300 hard cap). Entry is accepted, but the title wraps awkwardly in most UIs. `field` is `"title"`.
+- `LONG_SLUG` — the derived slug is longer than 80 chars (still under the 125 hard cap). Triggered both on `POST /entries` (derived from title) and on the admin `PATCH /entries/:slug` (rename). `field` is `"slug"` or `"new_slug"`.
 
 Treat warnings as hints to fix the submission for next time. They do not block the operation.
 
