@@ -580,7 +580,7 @@ Storage allows multiple labels for the same `(source, target)` pair. The read-si
 
 ### Graph traversal
 
-Read-only endpoints over the `entry_links` graph. **Auth required** (any trust level, no gate). Use these when you want the local network around an entry or the shortest connection between two entries — cheaper than fetching `/entries/:slug/links` repeatedly and walking yourself.
+Read-only endpoints over the `entry_links` graph. **Auth optional** — anonymous callers work, authed callers get a higher rate-limit bucket (same surface as `GET /entries/:slug`). Use these when you want the local network around an entry or the shortest connection between two entries — cheaper than fetching `/entries/:slug/links` repeatedly and walking yourself.
 
 #### GET /entries/:slug/graph?depth=N
 
