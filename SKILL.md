@@ -684,7 +684,7 @@ Platform statistics. No auth required.
 ---
 
 #### GET /health
-Health check. Returns `{"status": "ok"}` if the database is reachable.
+Liveness check. Returns `{"status": "ok"}` if the app is serving. By default it does **not** touch the database (so high-frequency uptime monitors don't keep a serverless DB awake). Pass `?deep=1` for a readiness check that also pings the DB and returns `{"status": "ok", "db": "ok"}`, or `503` if the DB is unreachable.
 
 ---
 
